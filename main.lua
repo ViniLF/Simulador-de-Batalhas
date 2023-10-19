@@ -19,22 +19,48 @@
 
 ]]
 
+-- main.lua
+
 -- Dependencies
 local utils = require("utils")
 local player = require("player.player")
 local playerActions = require("player.actions")
 local colossus = require("colossus.colossus")
 local colossusActions = require("colossus.actions")
+local sombraEspectral = require("sombraEspectral.sombraEspectral")
+local sombraEspectralActions = require("sombraEspectral.actions")
+
+-- Adicione a função que permite ao jogador fazer uma escolha
+local function getPlayerActionChoice()
+    print()
+    print(string.format("Qual será a próxima ação de %s?", player.name))
+    print("1. Atacar com a espada.")
+    print("2. Tomar uma poção de regeneração.")
+    return tonumber(io.read())
+end
 
 -- Habilitar UTF-8 no terminal
 utils.enableUtf8()
 
--- Header
-utils.printHeader()
+-- Função para apresentar a escolha de monstros
+local function chooseMonster()
+    print("Escolha o monstro:")
+    print("1. Prismarine Colossus")
+    print("2. Sombra Espectral")
+    local choice = tonumber(io.read())
+
+    if choice == 1 then
+        return colossus, colossusActions
+    elseif choice == 2 then
+        return sombraEspectral, sombraEspectralActions
+    else
+        print("Escolha inválida. Por favor, tente novamente.")
+        return chooseMonster()
+    end
+end
 
 -- Obter definição do monstro
-local boss = colossus
-local bossActions = colossusActions
+local boss, bossActions = chooseMonster()
 
 -- Apresentar o monstro
 utils.printCreature(boss)
@@ -45,7 +71,6 @@ bossActions.build()
 
 -- Começar o loop de batalha
 while true do
-
     -- Mostrar ações para o jogador
     print()
     print(string.format("Qual será a próxima ação de %s?", player.name))
@@ -98,4 +123,24 @@ elseif boss.health <= 0 then
     print(string.format("%s prevaleceu e venceu %s.", player.name, boss.name))
     print("Parabéns!!!")
     print()
+end
+
+-- Função para obter uma escolha válida do jogador
+local function getPlayerChoice()
+    print("Deseja jogar novamente?")
+    print("1. Sim")
+    print("2. Não")
+
+    while true do
+        io.write("> ")
+        local choice = tonumber(io.read())
+
+        if choice == 1 then
+            return true
+        elseif choice == 2 then
+            return false
+        else
+            print("Escolha inválida. Por favor, escolha 1 para Sim ou 2 para Não.")
+        end
+    end
 end
